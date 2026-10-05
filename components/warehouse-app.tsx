@@ -49,7 +49,7 @@ export default function WarehouseApp() {
     <main className="shell">
       <div className="topbar">
         <div className="brand" aria-label="CoTa Warehouse"><span className="brand-mark">C</span><span>CoTa<span className="brand-muted"> / Warehouse</span></span></div>
-        <div className="topbar-right"><span className="topbar-dot" /> OPERATIONS DESK <span className="topbar-divider" /> <span className="topbar-version">ASSESSMENT BUILD</span></div>
+        <div className="topbar-right"><a className="topbar-project-link" href="/project">Project plan & deliverables ↗</a><span className="topbar-divider" /><span className="topbar-dot" /> OPERATIONS DESK <span className="topbar-divider" /> <span className="topbar-version">ASSESSMENT BUILD</span></div>
       </div>
 
       <header className="page-heading">
@@ -57,6 +57,7 @@ export default function WarehouseApp() {
           <p className="eyebrow">WAREHOUSE OPERATIONS / 01</p>
           <h1>Inventory, <em>in view.</em></h1>
           <p className="intro">Find stock, plan a shelf refill, and build a route your team can follow.</p>
+          <a className="handoff-link" href="/project">Review the project plan, deliverables, and written responses <span aria-hidden="true">↗</span></a>
         </div>
         <div className="live-card" aria-live="polite">
           <div className="live-card-top"><span className={`status-pill ${error ? "status-error" : ""}`}><span className="status-dot" />{error ? "CONNECTION ISSUE" : loading ? "CONNECTING" : "LIVE INVENTORY"}</span></div>
