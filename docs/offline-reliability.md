@@ -1,0 +1,7 @@
+# Part 5 Intermittent connectivity
+
+The implemented application saves an unfinished pick request in the browser, so a refresh or temporary connection loss does not erase what an employee entered. It shows when inventory was last loaded and treats a failed refresh as stale data. Generating a new pick proposal requires a successful live refresh. Since the assessment app does not deduct stock, retrying this operation cannot create duplicate inventory changes.
+
+For a future version that records picks or stock adjustments offline, I would save each employee action in a durable local queue with a unique operation ID, device time, user, SKU, location, quantity, and expected stock version. The interface would show pending, synced, and needs-review states, and would never present a pending change as confirmed warehouse stock. On reconnection, the client would retry operations using the same IDs. The server would process each ID at most once inside a database transaction, validate available stock, and reject conflicting or impossible changes. It would return the authoritative balance and a clear reason for any conflict.
+
+Employees could review and correct rejected actions; the app would not silently discard or reapply them. An audit trail would retain the original action, retry attempts, server decision, and any correction. Cached inventory would display its last sync time, and employees would be warned when it may no longer reflect another worker’s activity.
