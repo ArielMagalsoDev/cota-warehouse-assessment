@@ -2,6 +2,9 @@
 
 A mobile-friendly Next.js application for finding inventory, planning open-shelf replenishment, and generating a case pick list in aisle order. The application reads live demonstration inventory from Supabase. Recommendations do not reserve or change stock.
 
+**Application:** https://cota-warehouse-assessment.vercel.app  
+**Repository:** https://github.com/ArielMagalsoDev/cota-warehouse-assessment
+
 ## Live setup
 
 The assessment uses the Supabase project `test project` in Armflare's organization, region `ap-southeast-1`. Its project ref is `uukcorwbjfpjayqcjxsp`.
