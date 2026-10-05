@@ -82,7 +82,7 @@ export default function WarehouseApp() {
           )}
         </div>
       </div>
-      <footer className="footer"><span>CoTa Warehouse / Operational planning tool</span><span>Read-only inventory · No stock is changed</span></footer>
+      <footer className="footer"><span>CoTa Warehouse / Operational planning tool</span><span><a href="/api/inventory" target="_blank" rel="noopener noreferrer">View inventory API ↗</a> · Read-only inventory · No stock is changed</span></footer>
     </main>
   );
 }

@@ -5,6 +5,10 @@ A mobile-friendly Next.js application for finding inventory, planning open-shelf
 **Application:** https://cota-warehouse-assessment.vercel.app  
 **Repository:** https://github.com/ArielMagalsoDev/cota-warehouse-assessment
 
+**Read-only API:** https://cota-warehouse-assessment.vercel.app/api/inventory
+
+The API returns JSON with each product, all storage locations, total cases and units, and configured open-shelf quantities. It contains the public assessment inventory only. No API key or database credential is included in its response. For example, TURTLE-01 returns `total_cases: 25` and `total_units: 300`.
+
 ## Live setup
 
 The assessment uses the Supabase project `test project` in Armflare's organization, region `ap-southeast-1`. Its project ref is `uukcorwbjfpjayqcjxsp`.
