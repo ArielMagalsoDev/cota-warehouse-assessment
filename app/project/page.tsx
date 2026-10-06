@@ -100,12 +100,12 @@ export default async function ProjectPage() {
               <div className="card step-card">
                 <ol className="project-steps">
                   <li>Clone the <a href={repo} {...external}>repository</a> and run <code>pnpm install</code>.</li>
-                  <li>Copy <code>.env.example</code> to <code>.env.local</code>. Set <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> for a Supabase project.</li>
+                  <li>Create a local <code>.env.local</code> with <code>SUPABASE_URL</code> and <code>SUPABASE_PUBLISHABLE_KEY</code> from your Supabase project. Set the same names as private environment variables on your host.</li>
                   <li>For a new project, run <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>schema.sql</a> and then <a href={`${repo}/blob/main/supabase/seed.sql`} {...external}>seed.sql</a> in the SQL Editor.</li>
                   <li>Run <code>pnpm dev</code> and open <code>http://localhost:3000</code>. Validate with <code>pnpm test</code>, <code>pnpm typecheck</code>, and <code>pnpm build</code>.</li>
                 </ol>
               </div>
-              <p className="callout"><span className="status-dot" aria-hidden="true" /><span>Use a publishable key for this public demo. Never place a secret or service-role key in a <code>NEXT_PUBLIC_</code> variable. Local environment files are Git-ignored.</span></p>
+              <p className="callout"><span className="status-dot" aria-hidden="true" /><span>The server reads Supabase with a publishable key. No key is included in browser assets or API responses. Local environment files are Git-ignored.</span></p>
             </section>
 
             <section className="project-section" id="database" aria-labelledby="database-title">
@@ -123,13 +123,13 @@ export default async function ProjectPage() {
             <section className="project-section" id="architecture" aria-labelledby="architecture-title">
               <SectionLabel>Design</SectionLabel>
               <h2 id="architecture-title">Architecture</h2>
-              <p className="section-intro">Next.js App Router serves the interface on Vercel. The client loads the three Supabase tables, then pure modules in <code>lib/</code> calculate totals, replenishment, and pick allocation. A server route exposes the same public inventory as read-only JSON.</p>
+              <p className="section-intro">Next.js App Router serves the interface on Vercel. A server route reads the three Supabase tables and returns public inventory to the browser without exposing a key. Pure modules in <code>lib/</code> calculate totals, replenishment, and pick allocation. A separate read-only API exposes product totals and locations.</p>
               <div className="architecture-flow" aria-label="Application architecture">
                 <span>Employee browser<small>Next.js UI</small></span>
                 <b aria-hidden="true"><ArrowRight /></b>
-                <span>Supabase<small>3 read-only tables</small></span>
+                <span>Next.js API<small>Server-side Supabase reads</small></span>
                 <b aria-hidden="true"><ArrowRight /></b>
-                <span>Calculation modules<small>Totals · refills · picks</small></span>
+                <span>Supabase<small>3 read-only tables</small></span>
               </div>
               <p className="section-intro">A draft pick request stays in versioned browser storage. Before generating a route, the app refreshes inventory and blocks the proposal if that refresh fails or stock is insufficient. Recommendations never reserve or change stock.</p>
             </section>

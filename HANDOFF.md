@@ -36,7 +36,7 @@ CoTa's *AI Automation & Applications Developer Assessment* has five parts: inven
 
 1. **Don't change business rules.** The `lib/` calculation modules and their tests are the source of truth. If a UI change seems to need different arithmetic, stop and ask.
 2. **Never present a proposal as implemented.** Video upload, AI recognition, offline write sync, employee sign-in and stock changes are *not* built. Parts 4 and 5 are design proposals, and the site must keep saying so.
-3. **No secrets anywhere public.** Only the Supabase *publishable* key belongs in `NEXT_PUBLIC_*`. Never put a secret or service-role key in source, an API response, a screenshot or this repository. `.env.local`, `.env.*.local`, `.vercel` and `node_modules` are Git-ignored. `.env.example` holds variable names only.
+3. **No keys anywhere public.** Supabase access stays in server routes using private `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` environment variables. Never put any key in client code, source, an API response, a screenshot, or this repository. All `.env*` files, `.vercel`, and `node_modules` are Git-ignored.
 4. **Don't reseed the shared database** as part of styling work. `supabase/seed.sql` is for fresh projects only.
 
 ## Visual direction
@@ -78,8 +78,10 @@ Accessibility is part of the brief, not decoration. Body text must reach at leas
 | `components/pick-list-panel.tsx` | Pick request form, saved draft, validation, route output |
 | `app/project/page.tsx` | Client handoff page. Reads `docs/*.md` at build time, so rebuild and redeploy after editing them |
 | `app/api/inventory/route.ts` | Public read-only JSON route |
+| `app/api/warehouse/route.ts` | Public data route used by the browser; never returns a key |
 | `app/globals.css` | Design tokens and all styles, grouped by section |
-| `lib/data.ts` | Loads and validates the three Supabase tables |
+| `lib/data.ts` | Server-side loader for the three Supabase tables |
+| `lib/client-data.ts` | Browser fetcher for the public data route |
 | `lib/inventory.ts`, `lib/replenishment.ts`, `lib/picking.ts` | Pure warehouse calculations (**do not change for design work**) |
 | `lib/types.ts` | Shared types |
 | `docs/ai-video-design.md`, `docs/offline-reliability.md` | Canonical Part 4 and Part 5 responses |
@@ -88,7 +90,7 @@ Accessibility is part of the brief, not decoration. Body text must reach at leas
 
 ## Architecture and data safety
 
-Next.js 16 App Router, React 19, TypeScript and Supabase JS. Client components read `products`, `storage_inventory` and `open_shelves` in parallel. The tables hold public demonstration data, with row level security enabled, explicit SELECT policies for anonymous and authenticated roles, and no client write grants. The JSON route serves the same data. No route or workflow performs a stock transaction.
+Next.js 16 App Router, React 19, TypeScript and Supabase JS. Server routes read `products`, `storage_inventory` and `open_shelves` in parallel using private environment variables; the browser calls `/api/warehouse` with no Supabase key. The tables hold public demonstration data, with row level security enabled, explicit SELECT policies for anonymous and authenticated roles, and no write grants. `/api/inventory` serves an aggregated public response. No route or workflow performs a stock transaction.
 
 ## Local setup and checks
 
@@ -96,7 +98,7 @@ Requires Node 22.6 or newer, because the tests use `--experimental-strip-types`.
 
 ```bash
 pnpm install
-cp .env.example .env.local   # then fill both NEXT_PUBLIC_SUPABASE_* values
+ # Create .env.local with SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY
 pnpm dev                      # http://localhost:3000 and /project
 pnpm test && pnpm typecheck && pnpm build
 ```

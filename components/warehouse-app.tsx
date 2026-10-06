@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { loadWarehouseData } from "@/lib/data";
+import { loadWarehouseData } from "@/lib/client-data";
 import { countAllCases } from "@/lib/inventory";
 import type { WarehouseData } from "@/lib/types";
 import InventorySearch from "./inventory-search";

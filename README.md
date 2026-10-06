@@ -18,16 +18,16 @@ The API returns JSON with each product, all storage locations, total cases and u
 The assessment uses the Supabase project `test project` in Armflare's organization, region `ap-southeast-1`. Its project ref is `uukcorwbjfpjayqcjxsp`.
 
 1. Install dependencies: `pnpm install`.
-2. Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from Supabase Project Settings → API Keys.
+2. Create an ignored `.env.local` containing `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` from Supabase Project Settings → API Keys. Set these same private variables in Vercel for deployment.
 3. For a new Supabase project, run `supabase/schema.sql` and then `supabase/seed.sql` in its SQL Editor.
 4. Start locally: `pnpm dev` and open `http://localhost:3000`.
 5. Validate: `pnpm test`, `pnpm typecheck`, and `pnpm build`.
 
-The publishable key is safe in browser code because the three public tables use row level security and expose SELECT only. Never put a Supabase secret or service-role key in a `NEXT_PUBLIC_` variable. `.env.local` is ignored by Git.
+The app uses the publishable key only on the server. No Supabase key is shipped to the browser or returned from an API. Never commit local environment files or use a secret or service-role key for this public endpoint. All `.env*` files are ignored by Git.
 
 ## Architecture
 
-The Next.js App Router serves a single page. Client Components load the three Supabase tables in parallel and handle employee interactions. Calculation modules in `lib/` contain inventory aggregation, replenishment, and pick allocation. This keeps warehouse arithmetic separate from rendering. Draft pick requests are stored in the browser under a versioned local-storage key. Generating a pick list refreshes Supabase data first and blocks output if the refresh fails.
+The Next.js App Router serves the application. A server route loads the three Supabase tables in parallel with a private environment variable; Client Components fetch that route and handle employee interactions. Calculation modules in `lib/` contain inventory aggregation, replenishment, and pick allocation. This keeps warehouse arithmetic separate from rendering. Draft pick requests are stored in the browser under a versioned local-storage key. Generating a pick list refreshes server-side data first and blocks output if the refresh fails.
 
 | Table | Purpose |
 | --- | --- |
