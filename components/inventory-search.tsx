@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { inventoryForSku, locationLabel, searchProducts, totalCases, totalUnits } from "@/lib/inventory";
 import type { WarehouseData } from "@/lib/types";
+import { Close } from "./icons";
 
 export default function InventorySearch({ data }: { data: WarehouseData }) {
   const [query, setQuery] = useState("");
@@ -21,7 +22,7 @@ export default function InventorySearch({ data }: { data: WarehouseData }) {
         <SearchIcon />
         <span className="sr-only">Search by SKU or product name</span>
         <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by SKU or product name…" autoComplete="off" />
-        {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search">×</button>}
+        {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><Close /></button>}
       </label>
 
       {matches.length === 0 ? (

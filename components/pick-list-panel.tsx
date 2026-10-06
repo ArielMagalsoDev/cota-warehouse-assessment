@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { buildPickList, type PickResult } from "@/lib/picking";
 import type { PickRequest, WarehouseData } from "@/lib/types";
+import { ArrowRight, Close, Plus, Route } from "./icons";
 
 const storageKey = "cota-pick-draft-v1";
 const starter: PickRequest[] = [
@@ -76,16 +77,16 @@ export default function PickListPanel({ data, refresh }: { data: WarehouseData; 
                   <span className="field-label">Cases</span>
                   <input type="number" min="1" step="1" inputMode="numeric" value={row.cases} onChange={(event) => edit(row.id, { cases: event.target.value })} aria-label={`Row ${index + 1} cases`} />
                 </label>
-                <button type="button" className="icon-button" onClick={() => remove(row.id)} aria-label={`Remove row ${index + 1}`}>×</button>
+                <button type="button" className="icon-button" onClick={() => remove(row.id)} aria-label={`Remove row ${index + 1}`}><Close /></button>
               </div>
             ))}
           </div>
           <div className="pick-actions">
-            <button type="button" className="text-button" onClick={add}>+ Add another SKU</button>
+            <button type="button" className="text-button" onClick={add}><Plus /> Add another SKU</button>
             <button type="button" className="text-button text-button-muted" disabled={working || !hydrated} onClick={resetSample}>Reset sample request</button>
           </div>
           <button type="button" className="button button-dark button-block" disabled={working || !hydrated} onClick={() => void generate()}>
-            {working ? "Checking live stock…" : "Generate pick list"}<span aria-hidden="true">→</span>
+            {working ? "Checking live stock…" : "Generate pick list"}<ArrowRight />
           </button>
           <p className="footnote">Your request is saved in this browser and restored when you return. Generating a list refreshes live stock.</p>
         </div>
@@ -120,7 +121,7 @@ export default function PickListPanel({ data, refresh }: { data: WarehouseData; 
             </div>
           ) : (
             <div className="result-placeholder">
-              <span className="route-symbol" aria-hidden="true">↗</span>
+              <span className="route-symbol" aria-hidden="true"><Route /></span>
               <strong>Your route starts here.</strong>
               <p>Generate a list to see locations in aisle order, with cases allocated at each stop.</p>
             </div>

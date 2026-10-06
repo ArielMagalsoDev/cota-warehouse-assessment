@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { repoUrl as repo, SectionLabel, SiteFooter, SiteNav, siteUrl as site } from "@/components/site-chrome";
+import { ArrowRight, ArrowUpRight } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Project plan & deliverables | CoTa Warehouse",
@@ -53,8 +54,8 @@ export default async function ProjectPage() {
           <h1><span className="hero-line">Project plan</span><span className="hero-line"><span className="tone">& deliverables</span></span></h1>
           <p className="hero-lede">Everything needed to review the assessment: the live application, source, setup, data model, design decisions, written responses, and known limits.</p>
           <div className="hero-actions">
-            <Link className="button button-dark" href="/">Open working application <span aria-hidden="true">→</span></Link>
-            <a className="button button-light" href={repo} {...external}>View Git repository <span aria-hidden="true">↗</span></a>
+            <Link className="button button-dark" href="/">Open working application <ArrowRight /></Link>
+            <a className="button button-light" href={repo} {...external}>View Git repository <ArrowUpRight /></a>
           </div>
         </section>
 
@@ -75,7 +76,7 @@ export default async function ProjectPage() {
                     <span className="card-label">{item.label}</span>
                     <strong>{item.title}</strong>
                     <small>{item.detail}</small>
-                    <span className="deliverable-arrow" aria-hidden="true">{item.external ? "↗" : "→"}</span>
+                    <span className="deliverable-arrow" aria-hidden="true">{item.external ? <ArrowUpRight /> : <ArrowRight />}</span>
                   </a>
                 ))}
               </div>
@@ -116,7 +117,7 @@ export default async function ProjectPage() {
                 <div className="card"><code>storage_inventory</code><p>Foreign-key <code>sku</code>, numeric aisle / rack / shelf, nonnegative <code>cases</code>, unique per SKU and location.</p></div>
                 <div className="card"><code>open_shelves</code><p>One row per configured SKU; <code>current_units</code> never exceeds <code>capacity_units</code>.</p></div>
               </div>
-              <p className="section-intro">Row level security is enabled on all three tables. Anonymous and authenticated clients get SELECT and explicit read policies for this public demonstration — no write grants. <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>View the complete schema SQL ↗</a></p>
+              <p className="section-intro">Row level security is enabled on all three tables. Anonymous and authenticated clients get SELECT and explicit read policies for this public demonstration — no write grants. <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>View the complete schema SQL <ArrowUpRight /></a></p>
             </section>
 
             <section className="project-section" id="architecture" aria-labelledby="architecture-title">
@@ -125,9 +126,9 @@ export default async function ProjectPage() {
               <p className="section-intro">Next.js App Router serves the interface on Vercel. The client loads the three Supabase tables, then pure modules in <code>lib/</code> calculate totals, replenishment, and pick allocation. A server route exposes the same public inventory as read-only JSON.</p>
               <div className="architecture-flow" aria-label="Application architecture">
                 <span>Employee browser<small>Next.js UI</small></span>
-                <b aria-hidden="true">→</b>
+                <b aria-hidden="true"><ArrowRight /></b>
                 <span>Supabase<small>3 read-only tables</small></span>
-                <b aria-hidden="true">→</b>
+                <b aria-hidden="true"><ArrowRight /></b>
                 <span>Calculation modules<small>Totals · refills · picks</small></span>
               </div>
               <p className="section-intro">A draft pick request stays in versioned browser storage. Before generating a route, the app refreshes inventory and blocks the proposal if that refresh fails or stock is insufficient. Recommendations never reserve or change stock.</p>
@@ -178,7 +179,7 @@ function Response({ id, label, title, tone, status, limit, body, file }: { id: s
         {body.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
         <div className="prose-foot">
           <span>{body.words} words · limit {limit}</span>
-          <a href={`${repo}/blob/main/docs/${file}`} {...external}>Read in the repository ↗</a>
+          <a href={`${repo}/blob/main/docs/${file}`} {...external}>Read in the repository <ArrowUpRight /></a>
         </div>
       </article>
     </section>

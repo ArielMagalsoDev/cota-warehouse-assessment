@@ -106,8 +106,11 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   font-size: 16px; font-weight: 500; letter-spacing: -.01em; text-decoration: none; white-space: nowrap;
   transition: background-color .2s ease, transform .2s ease;
 }
-.button span[aria-hidden] { transition: transform .2s ease; }
-.button:hover:not(:disabled) span[aria-hidden] { transform: translateX(3px); }
+.icon { width: 1.1em; height: 1.1em; flex: none; vertical-align: -.18em; transition: transform .2s ease; }
+.button .icon { width: 18px; height: 18px; }
+a:hover > .icon-right, button:hover:not(:disabled) > .icon-right { transform: translateX(3px); }
+a:hover > .icon-left { transform: translateX(-3px); }
+a:hover > .icon-up-right, a:hover .deliverable-arrow .icon-up-right { transform: translate(2px, -2px); }
 .button-dark { background: var(--ink); color: #fff; box-shadow: 1px 1px 2px rgba(0, 0, 0, .18), 3px 3px 9px rgba(0, 0, 0, .18), 10px 10px 30px rgba(0, 0, 0, .12); }
 .button-dark:hover:not(:disabled) { background: var(--ink-2); }
 .button-light { background: var(--surface); color: var(--ink); }
@@ -116,12 +119,13 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .button-ghost:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7); }
 .button-block { width: 100%; justify-content: space-between; margin-top: 24px; }
 
-.text-button { border: 0; background: none; padding: 6px 0; font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line-strong); }
+.text-button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 6px 0; font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line-strong); }
 .text-button:hover:not(:disabled) { text-decoration-color: currentColor; }
 .text-button-muted { color: var(--muted); font-weight: 500; }
 .chip-button { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--surface); font-size: 14px; font-weight: 600; white-space: nowrap; }
 .chip-button:hover:not(:disabled) { background: var(--soft); }
-.icon-button { width: 40px; height: 48px; border: 0; border-radius: 12px; background: none; color: var(--muted); font-size: 22px; line-height: 1; }
+.icon-button { width: 40px; height: 48px; display: grid; place-items: center; border: 0; border-radius: 12px; background: none; color: var(--muted); }
+.icon-button .icon { width: 20px; height: 20px; }
 .icon-button:hover { background: var(--alert-bg); color: var(--alert); }
 
 /* ---------- Hero ---------- */
@@ -161,7 +165,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .tab-compact { display: none; }
 .tab-index { font-family: var(--font-label); font-style: italic; font-size: 17px; color: var(--tone); }
 .data-bar { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 14px; }
-.spin { display: inline-block; animation: spin .8s linear infinite; }
+.spin { animation: spin .8s linear infinite; }
 
 .panel-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
 .panel-head h2 { margin: 0 0 6px; font-size: clamp(28px, 3vw, 36px); font-weight: 500; line-height: 1.15; letter-spacing: -.04em; }
@@ -182,7 +186,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .search-icon { width: 20px; height: 20px; flex: none; color: var(--muted); }
 .search-field input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; font-size: 17px; }
 .search-field input::placeholder { color: #767676; }
-.search-field button { width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--soft); font-size: 20px; line-height: 1; }
+.search-field button { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--soft); }
+.search-field button .icon { width: 18px; height: 18px; }
 
 .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .product-card { overflow: hidden; display: flex; flex-direction: column; }
@@ -264,7 +269,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .validation p { margin: 6px 0; }
 .validation-foot { color: var(--ink-2); font-size: 14px; }
 .result-placeholder, .loading-state, .empty-state { min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 28px; color: var(--muted); }
-.route-symbol { width: 64px; height: 64px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 50%; background: var(--soft); color: var(--ink); font-size: 28px; }
+.route-symbol { width: 64px; height: 64px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 50%; background: var(--soft); color: var(--ink); }
+.route-symbol .icon { width: 28px; height: 28px; }
 .result-placeholder strong, .empty-state strong { color: var(--ink); font-size: 20px; font-weight: 500; letter-spacing: -.02em; }
 .result-placeholder p, .empty-state p { max-width: 320px; margin: 8px 0 18px; line-height: 1.55; }
 .spinner { width: 32px; height: 32px; margin-bottom: 16px; border-radius: 50%; border: 3px solid rgba(0, 0, 0, .12); border-top-color: var(--ink); animation: spin .7s linear infinite; }
@@ -330,6 +336,7 @@ code { padding: 2px 6px; border-radius: 6px; background: rgba(0, 0, 0, .06); fon
 .deliverable-card .card-label { margin-bottom: auto; }
 .deliverable-card strong { font-size: 22px; font-weight: 500; letter-spacing: -.03em; }
 .deliverable-card small { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.deliverable-arrow .icon { width: 18px; height: 18px; }
 .deliverable-arrow { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--soft); transition: background-color .2s ease, color .2s ease; }
 .deliverable-card:hover .deliverable-arrow { background: var(--ink); color: #fff; }
 
@@ -359,7 +366,8 @@ code { padding: 2px 6px; border-radius: 6px; background: rgba(0, 0, 0, .06); fon
 .architecture-flow { display: flex; align-items: stretch; gap: 12px; margin: 8px 0 28px; }
 .architecture-flow > span { flex: 1; padding: 20px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--halo-soft); font-size: 17px; font-weight: 500; letter-spacing: -.02em; line-height: 1.4; }
 .architecture-flow small { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; font-weight: 400; letter-spacing: 0; }
-.architecture-flow b { flex: none; align-self: center; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 400; }
+.architecture-flow b { flex: none; align-self: center; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: #fff; }
+.architecture-flow b .icon { width: 18px; height: 18px; }
 
 .prose-card { padding: clamp(24px, 4vw, 48px); }
 .prose-card p { max-width: 68ch; margin: 0 0 18px; color: var(--ink-2); font-size: 17px; line-height: 1.8; }
@@ -427,6 +435,17 @@ code { padding: 2px 6px; border-radius: 6px; background: rgba(0, 0, 0, .06); fon
   .architecture-flow { flex-direction: column; }
   .architecture-flow b { transform: rotate(90deg); }
   .step-card { padding: 4px 20px; }
+}
+
+@media (max-width: 480px) {
+  .pick-rows { gap: 16px; }
+  .pick-row { grid-template-columns: 20px minmax(0, 1fr) 40px; grid-template-areas: "num sku sku" "num cases remove"; row-gap: 8px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .pick-row .row-num { grid-area: num; align-self: start; height: auto; padding-top: 26px; }
+  .pick-row > label:first-of-type { grid-area: sku; }
+  .pick-row > label:last-of-type { grid-area: cases; }
+  .pick-row .icon-button { grid-area: remove; }
+  .pick-row input { text-align: left; }
+  .hero-pill { font-size: 12.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

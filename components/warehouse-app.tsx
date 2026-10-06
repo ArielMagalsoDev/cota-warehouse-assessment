@@ -9,6 +9,7 @@ import InventorySearch from "./inventory-search";
 import ReplenishmentPanel from "./replenishment-panel";
 import PickListPanel from "./pick-list-panel";
 import { SectionLabel, SiteFooter, SiteNav } from "./site-chrome";
+import { ArrowRight, ArrowUpRight, Refresh } from "./icons";
 
 type Tab = "inventory" | "replenishment" | "picking";
 const tabs: { id: Tab; label: string; compact: string; short: string }[] = [
@@ -88,8 +89,8 @@ export default function WarehouseApp() {
           </h1>
           <p className="hero-lede">Find stock, plan a shelf refill, and build a pick route your team can follow — straight from the live warehouse data.</p>
           <div className="hero-actions">
-            <a className="button button-dark" href="#workspace">Open the workspace <span aria-hidden="true">→</span></a>
-            <Link className="button button-light" href="/project">Project plan & deliverables <span aria-hidden="true">↗</span></Link>
+            <a className="button button-dark" href="#workspace">Open the workspace <ArrowRight /></a>
+            <Link className="button button-light" href="/project">Project plan & deliverables <ArrowUpRight /></Link>
           </div>
         </section>
 
@@ -121,7 +122,7 @@ export default function WarehouseApp() {
               <div className="data-bar">
                 <span>{loading ? "Loading inventory…" : data ? `Updated ${new Date(data.fetchedAt).toLocaleString()}` : "Inventory unavailable"}{stale && data ? " · showing previous data" : ""}</span>
                 <button type="button" className="chip-button" onClick={() => void refresh()} disabled={loading || refreshing}>
-                  <span aria-hidden="true" className={refreshing ? "spin" : ""}>↻</span> {refreshing ? "Refreshing…" : "Refresh data"}
+                  <Refresh className={refreshing ? "spin" : ""} /> {refreshing ? "Refreshing…" : "Refresh data"}
                 </button>
               </div>
             </div>
@@ -135,7 +136,7 @@ export default function WarehouseApp() {
                 <div className="empty-state">
                   <strong>Inventory is unavailable</strong>
                   <p>Check the connection or project configuration, then try again.</p>
-                  <button className="button button-dark" type="button" onClick={() => void refresh()}>Try again <span aria-hidden="true">↻</span></button>
+                  <button className="button button-dark" type="button" onClick={() => void refresh()}>Try again <Refresh /></button>
                 </div>
               ) : (
                 <>
@@ -158,7 +159,7 @@ export default function WarehouseApp() {
                 <div>
                   <h3>{rule.title}</h3>
                   <p>{rule.body}</p>
-                  <button type="button" className="text-button" onClick={() => openWorkflow(rule.tab)}>Try it <span aria-hidden="true">→</span></button>
+                  <button type="button" className="text-button" onClick={() => openWorkflow(rule.tab)}>Try it <ArrowRight /></button>
                 </div>
               </li>
             ))}
