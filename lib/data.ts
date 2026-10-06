@@ -1,12 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { OpenShelf, Product, StorageInventory, WarehouseData } from "./types";
+
+let cachedClient: SupabaseClient | null = null;
 
 export async function loadWarehouseData(): Promise<WarehouseData> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) throw new Error("Supabase is not configured. Set the public URL and publishable key.");
 
-  const client = createClient(url, key);
+  // One client per runtime; creating one per refresh triggers Supabase's duplicate-auth-client warning.
+  const client = cachedClient ??= createClient(url, key, { auth: { persistSession: false } });
   const [productsResult, storageResult, shelvesResult] = await Promise.all([
     client.from("products").select("sku,name,units_per_case").order("sku"),
     client.from("storage_inventory").select("id,sku,aisle,rack,shelf,cases,updated_at"),

@@ -1,93 +1,135 @@
-# CoTa Warehouse — handoff for site refinement
+# CoTa Warehouse — developer handoff
 
-This file is for a developer or coding assistant taking over the visual and UX refinement of the assessment site. The application is already implemented, deployed, and backed by a public read-only Supabase demo database. Keep the working warehouse calculations and client deliverables intact while improving presentation and usability.
+This file is for a developer or coding assistant picking up the CoTa Warehouse assessment site. The application already works, is deployed, and reads from a public, read-only Supabase demo database. **Your job is presentation and usability.** The warehouse calculations and client deliverables are finished and verified, so don't change them.
 
-## Start here
+## At a glance
 
-- Live application: https://cota-warehouse-assessment.vercel.app/
-- Client-facing plan and deliverables: https://cota-warehouse-assessment.vercel.app/project
-- Public read-only API: https://cota-warehouse-assessment.vercel.app/api/inventory
-- Public repository: https://github.com/ArielMagalsoDev/cota-warehouse-assessment
-- Production branch: `main`
-- Hosting: Vercel project `cota-warehouse-assessment` under `ariel-m-projects`
-- Database: Supabase project `test project` in the Armflare organization, project ref `uukcorwbjfpjayqcjxsp`
+| | |
+| --- | --- |
+| Live application | https://cota-warehouse-assessment.vercel.app/ |
+| Client handoff page | https://cota-warehouse-assessment.vercel.app/project |
+| Read-only API | https://cota-warehouse-assessment.vercel.app/api/inventory |
+| Repository | https://github.com/ArielMagalsoDev/cota-warehouse-assessment (public, production branch `main`) |
+| Hosting | Vercel project `cota-warehouse-assessment`, scope `ariel-m-projects` |
+| Database | Supabase project `test project` (Armflare organization), ref `uukcorwbjfpjayqcjxsp`, region `ap-southeast-1` |
 
-The client should be able to receive only the live application URL. The homepage links prominently to `/project`, which contains the working URL, repository and README links, setup, database description, architecture, full Part 4 and Part 5 responses, and assumptions and limitations.
+The client may receive only the live URL. The homepage links prominently to `/project`. That page holds the repository and README links, setup steps, database and architecture notes, the full Part 4 and Part 5 responses, and the assumptions and limits.
 
-## Requested refinement
+## What the brief asks for
 
-Polish the existing Next.js site for a client review. Aim for a clean, credible, mobile-friendly warehouse operations interface. The current visual direction uses warm off-white surfaces, restrained green accents, DM Sans body text, Space Grotesk headings, and simple cards. You may improve hierarchy, spacing, typography, responsive behavior, copy clarity, and interaction feedback. Keep the three operational workflows and the `/project` handoff easy to find and understand.
+CoTa's *AI Automation & Applications Developer Assessment* has five parts: inventory search, open-shelf replenishment, a pick list, and two written responses. Its explicit values shape every decision here:
 
-Suggested review order:
+- About **three hours** of work. A *complete, reliable, understandable* result beats extra features or decorative design.
+- **"We value simplicity. Do not over-engineer."** The candidate must be able to demo the app, explain the code, and say what they would improve next.
+- Part 4 is **at most 750 words** and Part 5 **at most 250 words**. `/project` shows the live word count against each limit (currently 583 and 222).
 
-1. Review the homepage at desktop and mobile widths, including loading, unavailable-data, search, replenishment, successful pick, and stock-shortage states.
-2. Refine the `/project` page so a client can scan deliverables quickly and still read the complete written responses comfortably.
-3. Check keyboard navigation, focus states, labels, contrast, long text wrapping, and mobile overflow.
-4. Run the existing checks, then verify the live site and API after deployment.
+| Brief requirement | Where it is met |
+| --- | --- |
+| Part 1: search by SKU or name. Show SKU, name, units/case, every location with its cases, total cases, total units | Inventory search tab (`components/inventory-search.tsx`, `lib/inventory.ts`) |
+| Part 2: units needed, complete cases to pull, a clear explanation including the full-case consequence | Shelf replenishment tab. The black answer card states the 5 leftover units and why they can't go on the shelf (`lib/replenishment.ts`) |
+| Part 3: enter the sample request. Output SKU, location, cases and sequence; avoid backtracking; handle shortages clearly | Pick list tab (`lib/picking.ts`). Aisle → rack → shelf order. A shortage blocks the list and explains the fix |
+| Part 4: video → SKU / location / visible count design | `docs/ai-video-design.md`, rendered on `/project#part-4` |
+| Part 5: offline reliability | `docs/offline-reliability.md`, rendered on `/project#part-5` |
+| Deliverables: URL, repo, README, schema, architecture, Parts 4 and 5, assumptions | One card each on `/project#deliverables`, in the brief's order |
 
-These are polish priorities, not permission to change the warehouse business rules or represent proposed features as implemented.
+## Ground rules
 
-## Current functionality and acceptance examples
+1. **Don't change business rules.** The `lib/` calculation modules and their tests are the source of truth. If a UI change seems to need different arithmetic, stop and ask.
+2. **Never present a proposal as implemented.** Video upload, AI recognition, offline write sync, employee sign-in and stock changes are *not* built. Parts 4 and 5 are design proposals, and the site must keep saying so.
+3. **No secrets anywhere public.** Only the Supabase *publishable* key belongs in `NEXT_PUBLIC_*`. Never put a secret or service-role key in source, an API response, a screenshot or this repository. `.env.local`, `.env.*.local`, `.vercel` and `node_modules` are Git-ignored. `.env.example` holds variable names only.
+4. **Don't reseed the shared database** as part of styling work. `supabase/seed.sql` is for fresh projects only.
 
-- **Inventory search:** Matches product name or SKU without case sensitivity. It shows all storage locations and aggregate cases and units. `TURTLE-01` has 18 cases at A1-R2-S1 and 7 at A4-R1-S2: 25 cases, 300 units.
-- **Shelf replenishment:** Uses complete cases. The supplied turtle shelf has capacity 60 units and currently holds 17; it needs 43 units. Four 12-unit cases supply 48 units, leaving 5 units outside the shelf. The UI also reports a storage shortage when applicable.
-- **Pick list:** Validates known SKUs and positive whole case counts, combines repeated SKUs, blocks the entire proposal on a shortage, allocates cases from storage locations in numeric aisle/rack/shelf order, and displays the route in that order. The sample request is turtle 3, shark 2, alien 1, producing A1 → A2 → A3. Requests are proposals and do not reserve or deduct stock.
-- **Saved draft:** A pick request is saved in the current browser under `cota-pick-draft-v1`. A previous reviewer entered 5 alien cases while only 4 exist; the resulting shortage was expected validation, not an application outage. The pick screen now explains shortages and offers **Reset sample request**.
-- **Freshness:** Generating a pick list first reloads live inventory. If the refresh fails, no new route is generated. The last-loaded time and stale-data state are shown.
-- **API:** `GET /api/inventory` returns current demo products, locations, case/unit totals, and configured shelf quantities as JSON. It is public and read-only.
+## Visual direction
+
+The site uses the design language of the Hanzo Framer template (https://hanzo.framer.website/), but none of its copy, imagery or branding. The decoration is deliberately light, because the brief rewards clarity. The workspace sits directly under the hero, and every decorative element (headline tiles, tilted cards) is `aria-hidden` or purely presentational.
+
+| Element | Treatment |
+| --- | --- |
+| Canvas | Neutral grey (`#d9d9d9`) with a soft white light glow; no brand colour fills |
+| Type | Inter Tight (stand-in for Inter Display) set tight. Large 500-weight headlines whose second clause is grey. Instrument Serif italic for small section labels, flanked by hairlines |
+| Surfaces | White cards, 16px radius, an 8px translucent white "halo" ring and a soft offset shadow. Larger glass panels at 50–75% white |
+| Actions | Black pill primary buttons with an arrow; white pill secondary buttons and tags |
+| Navigation | Floating pill nav: brand on the left, project link on the right |
+| Footer | Black block with a large call to action toward `/project` |
+| Status colour | Green dot for live data. Orange-red only for shortages and errors |
+
+Accessibility is part of the brief, not decoration. Body text must reach at least 4.5:1 contrast and large grey headline text at least 3:1. Every control needs a visible focus state. The workflow switcher is an ARIA tablist with arrow-key support. Nothing may scroll horizontally at 375px.
+
+## Behaviour to preserve (acceptance examples)
+
+| Workflow | Must still hold |
+| --- | --- |
+| Inventory search | Matches product name or SKU, case-insensitive. Lists every storage location with aggregate cases and units. `TURTLE-01` → 18 cases at A1-R2-S1 + 7 at A4-R1-S2 = **25 cases, 300 units** |
+| Shelf replenishment | Complete cases only. Turtle shelf 17 / 60 units needs **43 units → 4 cases (48 units) → 5 units kept outside the shelf**. Reports a storage shortage when there is one |
+| Pick list | Validates known SKUs and positive whole case counts and combines repeated SKUs. A shortage blocks the entire proposal. Cases are allocated in numeric aisle/rack/shelf order and the route is shown in that order. Sample turtle 3, shark 2, alien 1 → **A1 → A2 → A3** (3 stops). Proposals never reserve or deduct stock |
+| Saved draft | Stored in the browser under `cota-pick-draft-v1`. Alien 5 (only 4 exist) is an *expected* shortage message, not an outage. **Reset sample request** restores the starter |
+| Freshness | Generating a pick list reloads live inventory first. If that refresh fails, no route is produced. The last-loaded time and stale-data state are visible |
+| API | `GET /api/inventory` returns products, locations, case and unit totals, and shelf configuration as public JSON. It is read-only |
 
 ## Code map
 
 | Path | Role |
 | --- | --- |
-| `app/page.tsx` | Homepage entry point |
-| `components/warehouse-app.tsx` | Main shell, workflow tabs, data loading, refresh and connection state |
-| `components/inventory-search.tsx` | Search and inventory cards |
-| `components/replenishment-panel.tsx` | Shelf refill interface |
-| `components/pick-list-panel.tsx` | Pick request, saved draft, validation and route output |
-| `app/project/page.tsx` | Client-facing plan, deliverables and written responses |
+| `app/layout.tsx` | Root layout, metadata, fonts via `next/font/google` (Inter Tight, Instrument Serif) |
+| `app/page.tsx` → `components/warehouse-app.tsx` | Homepage: hero with live-stock pill, ARIA tablist workspace, data loading, refresh and connection state, "How it works" cards |
+| `components/site-chrome.tsx` | Shared floating nav, serif section label, black footer CTA, and repo/site URL constants |
+| `components/inventory-search.tsx` | Search field and product cards |
+| `components/replenishment-panel.tsx` | Shelf refill view |
+| `components/pick-list-panel.tsx` | Pick request form, saved draft, validation, route output |
+| `app/project/page.tsx` | Client handoff page. Reads `docs/*.md` at build time, so rebuild and redeploy after editing them |
 | `app/api/inventory/route.ts` | Public read-only JSON route |
-| `app/globals.css` | Global visual system and responsive styles; currently compact and suitable for cleanup |
-| `lib/data.ts` | Loads and validates Supabase data |
-| `lib/inventory.ts`, `lib/replenishment.ts`, `lib/picking.ts` | Pure warehouse calculations |
-| `lib/types.ts` | Shared data types |
+| `app/globals.css` | Design tokens and all styles, grouped by section |
+| `lib/data.ts` | Loads and validates the three Supabase tables |
+| `lib/inventory.ts`, `lib/replenishment.ts`, `lib/picking.ts` | Pure warehouse calculations (**do not change for design work**) |
+| `lib/types.ts` | Shared types |
 | `docs/ai-video-design.md`, `docs/offline-reliability.md` | Canonical Part 4 and Part 5 responses |
-| `supabase/schema.sql`, `supabase/seed.sql` | Reproducible database schema and demo seed |
+| `supabase/schema.sql`, `supabase/seed.sql` | Reproducible schema (RLS, SELECT-only grants) and demo seed |
 | `tests/warehouse.test.ts` | Arithmetic, replenishment, ordering and shortage tests |
-
-The `/project` page reads the two Markdown response files at build time. If their wording changes, rebuild and redeploy the site so the public page reflects it.
 
 ## Architecture and data safety
 
-The site uses Next.js App Router, React, TypeScript, and Supabase JS. Client components read three Supabase tables in parallel: `products`, `storage_inventory`, and `open_shelves`. The tables contain public demonstration data. Row level security is enabled, with explicit SELECT policies for anonymous and authenticated users and no client write grants. The JSON route returns the same public demo inventory. No route or workflow performs stock transactions.
+Next.js 16 App Router, React 19, TypeScript and Supabase JS. Client components read `products`, `storage_inventory` and `open_shelves` in parallel. The tables hold public demonstration data, with row level security enabled, explicit SELECT policies for anonymous and authenticated roles, and no client write grants. The JSON route serves the same data. No route or workflow performs a stock transaction.
 
-`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are configured through the environment. A publishable key is designed for browser use; a Supabase secret or service-role key must never be added to a `NEXT_PUBLIC_` variable, source file, API response, screenshot, or public repository. `.env.local`, `.env.*.local`, `.vercel`, and `node_modules` are Git-ignored. Use `.env.example` for variable names and placeholders only. Do not paste real keys into this handoff.
+## Local setup and checks
 
-Part 4 describes a *future* video-assisted observation and human-review workflow. Part 5 describes the existing local draft and a *future* offline stock-transaction queue. Video upload, AI recognition, offline write synchronization, employee authentication, and stock mutation are not implemented. Keep that distinction clear on the public site.
+Requires Node 22.6 or newer, because the tests use `--experimental-strip-types`.
 
-## Local setup and validation
-
-```text
+```bash
 pnpm install
-cp .env.example .env.local
-# Fill the two NEXT_PUBLIC_SUPABASE_* variables in .env.local.
-pnpm dev
-pnpm test
-pnpm typecheck
-pnpm build
+cp .env.example .env.local   # then fill both NEXT_PUBLIC_SUPABASE_* values
+pnpm dev                      # http://localhost:3000 and /project
+pnpm test && pnpm typecheck && pnpm build
 ```
 
-Open `http://localhost:3000` for the application and `/project` for the client handoff. For a fresh Supabase project, run `supabase/schema.sql` followed by `supabase/seed.sql` in the SQL Editor. Do not rerun seed SQL against the shared live project as a routine styling step.
+Without pnpm, the same scripts run directly: `node node_modules/next/dist/bin/next dev`, `node --experimental-strip-types --test tests/*.test.ts`, `node node_modules/typescript/bin/tsc --noEmit`.
 
-The repository is already public and the Vercel project is already linked in the original checkout. Publishing a change requires pushing to `main` and deploying the linked Vercel project, then checking the production URL. A fresh clone will need its own local Vercel link and appropriate access; the ignored `.vercel` directory is not in Git. The Vercel CLI can be run with `pnpm dlx vercel@62.2.0 deploy --prod --yes --scope ariel-m-projects` from a linked, authenticated checkout.
+For a fresh Supabase project, run `supabase/schema.sql` and then `supabase/seed.sql` in the SQL Editor.
+
+## Releasing
+
+1. Run the three checks above, then click through the acceptance list below locally at desktop and phone widths.
+2. Push to `main`.
+3. Deploy from a linked, authenticated checkout: `pnpm dlx vercel@62.2.0 deploy --prod --yes --scope ariel-m-projects`. A fresh clone needs its own `vercel link`, because `.vercel` is not in Git.
+4. Recheck the production URLs.
+
+## Before handing back
+
+- [ ] `/`, `/project` and `/api/inventory` load publicly in production.
+- [ ] Searching `turtle` shows 25 cases / 300 units across two locations.
+- [ ] Turtle refill shows 43 needed, 4 cases, 5 left over.
+- [ ] The starter pick produces three stops, A1 → A2 → A3.
+- [ ] Alien 5 cases gives a clear shortage, and **Reset sample request** recovers.
+- [ ] Loading, unavailable-data and stale-data states read clearly.
+- [ ] Keyboard-only use works end to end, with focus always visible.
+- [ ] There is no horizontal scroll at 375px and long text wraps.
+- [ ] Parts 4 and 5 are still labelled as proposals.
+- [ ] No credentials appear in tracked files or rendered output.
 
 ## Known limits
 
-- Warehouse stock may change after a proposal is generated, so employees must confirm cases at each location.
-- Pick routing is numeric aisle/rack/shelf ordering, not shortest-path optimization.
-- Drafts live only in one browser/device and do not sync across devices.
-- Only `TURTLE-01` has supplied open-shelf configuration.
-- The demo database is publicly readable. Real warehouse data would need authentication, authorization, auditability, and transaction handling.
-- The current automated tests cover calculation rules; add focused browser checks for visual or interaction changes when useful.
-
-Before handing the refined site back, confirm that the homepage, `/project`, and `/api/inventory` are publicly reachable; the starter pick produces three stops; a five-case alien request gives a clear shortage; and no credentials are in tracked files or rendered output.
+- Stock can change after a proposal is generated, so employees confirm cases at each location.
+- Routing is numeric aisle/rack/shelf order, not shortest-path optimization.
+- Drafts live in one browser on one device and don't sync.
+- Only `TURTLE-01` has open-shelf configuration.
+- The demo database is publicly readable. Real warehouse data would need authentication, authorization, auditability and transactional writes.
+- Automated tests cover the calculation rules only. Add focused browser checks when interaction behaviour changes.
