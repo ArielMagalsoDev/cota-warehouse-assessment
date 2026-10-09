@@ -100,8 +100,8 @@ export default async function ProjectPage() {
               <div className="card step-card">
                 <ol className="project-steps">
                   <li>Clone the <a href={repo} {...external}>repository</a> and run <code>pnpm install</code>.</li>
-                  <li>Create a local <code>.env.local</code> with <code>SUPABASE_URL</code> and <code>SUPABASE_PUBLISHABLE_KEY</code> from your Supabase project. Set the same names as private environment variables on your host.</li>
-                  <li>For a new project, run <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>schema.sql</a> and then <a href={`${repo}/blob/main/supabase/seed.sql`} {...external}>seed.sql</a> in the SQL Editor.</li>
+                  <li>Create a local <code>.env.local</code> with the pooled Neon <code>DATABASE_URL</code>. Store the same value as a Secret environment variable on your host.</li>
+                  <li>For a fresh database, apply <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>schema.sql</a> and then <a href={`${repo}/blob/main/supabase/seed.sql`} {...external}>seed.sql</a> using a direct Postgres connection. The folder name is retained as migration history.</li>
                   <li>Run <code>pnpm dev</code> and open <code>http://localhost:3000</code>. Validate with <code>pnpm test</code>, <code>pnpm typecheck</code>, and <code>pnpm build</code>.</li>
                 </ol>
               </div>
@@ -117,7 +117,7 @@ export default async function ProjectPage() {
                 <div className="card"><code>storage_inventory</code><p>Foreign-key <code>sku</code>, numeric aisle / rack / shelf, nonnegative <code>cases</code>, unique per SKU and location.</p></div>
                 <div className="card"><code>open_shelves</code><p>One row per configured SKU; <code>current_units</code> never exceeds <code>capacity_units</code>.</p></div>
               </div>
-              <p className="section-intro">Row level security is enabled on all three tables. Anonymous and authenticated clients get SELECT and explicit read policies for this public demonstration — no write grants. <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>View the complete schema SQL <ArrowUpRight /></a></p>
+              <p className="section-intro">The server reads all three tables through a private pooled Neon connection. The browser receives only the public demonstration rows exposed by the application API and never receives a database credential. <a href={`${repo}/blob/main/supabase/schema.sql`} {...external}>View the complete schema SQL <ArrowUpRight /></a></p>
             </section>
 
             <section className="project-section" id="architecture" aria-labelledby="architecture-title">

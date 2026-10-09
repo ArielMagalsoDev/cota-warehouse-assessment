@@ -1,6 +1,6 @@
 # CoTa Warehouse Assessment
 
-A mobile-friendly Next.js application for finding inventory, planning open-shelf replenishment, and generating a case pick list in aisle order. The application reads live demonstration inventory from Supabase. Recommendations do not reserve or change stock.
+A mobile-friendly Next.js application for finding inventory, planning open-shelf replenishment, and generating a case pick list in aisle order. The application reads live demonstration inventory from its own Neon Postgres project. Recommendations do not reserve or change stock.
 
 **Application:** https://cota-warehouse-assessment.vercel.app  
 **Client handoff and project plan:** https://cota-warehouse-assessment.vercel.app/project
@@ -15,19 +15,19 @@ The API returns JSON with each product, all storage locations, total cases and u
 
 ## Live setup
 
-The assessment uses the Supabase project `test project` in Armflare's organization, region `ap-southeast-1`. Its project ref is `uukcorwbjfpjayqcjxsp`.
+The assessment uses the separate Neon project `test-project` in Singapore. Its Neon project ID is `plain-heart-21160127`.
 
 1. Install dependencies: `pnpm install`.
-2. Create an ignored `.env.local` containing `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` from Supabase Project Settings → API Keys. Set these same private variables in Vercel for deployment.
-3. For a new Supabase project, run `supabase/schema.sql` and then `supabase/seed.sql` in its SQL Editor.
+2. Create an ignored `.env.local` containing the pooled Neon `DATABASE_URL`. Set it as a Secret environment variable in Vercel for deployment.
+3. For a fresh database, apply `supabase/schema.sql` and then `supabase/seed.sql` with a direct, non-pooled Postgres connection. The folder name is retained as migration history from the original Supabase deployment.
 4. Start locally: `pnpm dev` and open `http://localhost:3000`.
 5. Validate: `pnpm test`, `pnpm typecheck`, and `pnpm build`.
 
-The app uses the publishable key only on the server. No Supabase key is shipped to the browser or returned from an API. Never commit local environment files or use a secret or service-role key for this public endpoint. All `.env*` files are ignored by Git.
+The app uses the pooled database connection only on the server. The Neon connection string is never shipped to the browser or returned from an API. Never commit local environment files. All `.env*` files are ignored by Git.
 
 ## Architecture
 
-The Next.js App Router serves the application. A server route loads the three Supabase tables in parallel with a private environment variable; Client Components fetch that route and handle employee interactions. Calculation modules in `lib/` contain inventory aggregation, replenishment, and pick allocation. This keeps warehouse arithmetic separate from rendering. Draft pick requests are stored in the browser under a versioned local-storage key. Generating a pick list refreshes server-side data first and blocks output if the refresh fails.
+The Next.js App Router serves the application. A server route loads the three Neon Postgres tables in parallel with a private pooled connection string; Client Components fetch that route and handle employee interactions. Calculation modules in `lib/` contain inventory aggregation, replenishment, and pick allocation. This keeps warehouse arithmetic separate from rendering. Draft pick requests are stored in the browser under a versioned local-storage key. Generating a pick list refreshes server-side data first and blocks output if the refresh fails.
 
 | Table | Purpose |
 | --- | --- |

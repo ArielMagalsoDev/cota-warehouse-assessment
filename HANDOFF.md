@@ -1,6 +1,6 @@
 # CoTa Warehouse — developer handoff
 
-This file is for a developer or coding assistant picking up the CoTa Warehouse assessment site. The application already works, is deployed, and reads from a public, read-only Supabase demo database. **Your job is presentation and usability.** The warehouse calculations and client deliverables are finished and verified, so don't change them.
+This file is for a developer or coding assistant picking up the CoTa Warehouse assessment site. The application already works, is deployed, and reads from a public, read-only Neon Postgres demo database. **Your job is presentation and usability.** The warehouse calculations and client deliverables are finished and verified, so don't change them.
 
 ## At a glance
 
@@ -11,7 +11,7 @@ This file is for a developer or coding assistant picking up the CoTa Warehouse a
 | Read-only API | https://cota-warehouse-assessment.vercel.app/api/inventory |
 | Repository | https://github.com/ArielMagalsoDev/cota-warehouse-assessment (public, production branch `main`) |
 | Hosting | Vercel project `cota-warehouse-assessment`, scope `ariel-m-projects` |
-| Database | Supabase project `test project` (Armflare organization), ref `uukcorwbjfpjayqcjxsp`, region `ap-southeast-1` |
+| Database | Separate Neon project `test-project`, ID `plain-heart-21160127`, Singapore region |
 
 The client may receive only the live URL. The homepage links prominently to `/project`. That page holds the repository and README links, setup steps, database and architecture notes, the full Part 4 and Part 5 responses, and the assumptions and limits.
 
@@ -36,7 +36,7 @@ CoTa's *AI Automation & Applications Developer Assessment* has five parts: inven
 
 1. **Don't change business rules.** The `lib/` calculation modules and their tests are the source of truth. If a UI change seems to need different arithmetic, stop and ask.
 2. **Never present a proposal as implemented.** Video upload, AI recognition, offline write sync, employee sign-in and stock changes are *not* built. Parts 4 and 5 are design proposals, and the site must keep saying so.
-3. **No keys anywhere public.** Supabase access stays in server routes using private `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` environment variables. Never put any key in client code, source, an API response, a screenshot, or this repository. All `.env*` files, `.vercel`, and `node_modules` are Git-ignored.
+3. **No keys anywhere public.** Neon access stays in server routes using the private pooled `DATABASE_URL` environment variable. Never put the connection string in client code, source, an API response, a screenshot, or this repository. All `.env*` files, `.vercel`, and `node_modules` are Git-ignored.
 4. **Don't reseed the shared database** as part of styling work. `supabase/seed.sql` is for fresh projects only.
 
 ## Visual direction
@@ -80,7 +80,7 @@ Accessibility is part of the brief, not decoration. Body text must reach at leas
 | `app/api/inventory/route.ts` | Public read-only JSON route |
 | `app/api/warehouse/route.ts` | Public data route used by the browser; never returns a key |
 | `app/globals.css` | Design tokens and all styles, grouped by section |
-| `lib/data.ts` | Server-side loader for the three Supabase tables |
+| `lib/data.ts` | Server-side loader for the three Neon Postgres tables |
 | `lib/client-data.ts` | Browser fetcher for the public data route |
 | `lib/inventory.ts`, `lib/replenishment.ts`, `lib/picking.ts` | Pure warehouse calculations (**do not change for design work**) |
 | `lib/types.ts` | Shared types |
@@ -90,7 +90,7 @@ Accessibility is part of the brief, not decoration. Body text must reach at leas
 
 ## Architecture and data safety
 
-Next.js 16 App Router, React 19, TypeScript and Supabase JS. Server routes read `products`, `storage_inventory` and `open_shelves` in parallel using private environment variables; the browser calls `/api/warehouse` with no Supabase key. The tables hold public demonstration data, with row level security enabled, explicit SELECT policies for anonymous and authenticated roles, and no write grants. `/api/inventory` serves an aggregated public response. No route or workflow performs a stock transaction.
+Next.js 16 App Router, React 19, TypeScript and the Neon serverless driver. Server routes read `products`, `storage_inventory` and `open_shelves` in parallel using the private pooled `DATABASE_URL`; the browser calls `/api/warehouse` with no database credential. The tables hold public demonstration data. `/api/inventory` serves an aggregated public response. No route or workflow performs a stock transaction.
 
 ## Local setup and checks
 
@@ -98,14 +98,14 @@ Requires Node 22.6 or newer, because the tests use `--experimental-strip-types`.
 
 ```bash
 pnpm install
- # Create .env.local with SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY
+ # Create .env.local with the pooled Neon DATABASE_URL
 pnpm dev                      # http://localhost:3000 and /project
 pnpm test && pnpm typecheck && pnpm build
 ```
 
 Without pnpm, the same scripts run directly: `node node_modules/next/dist/bin/next dev`, `node --experimental-strip-types --test tests/*.test.ts`, `node node_modules/typescript/bin/tsc --noEmit`.
 
-For a fresh Supabase project, run `supabase/schema.sql` and then `supabase/seed.sql` in the SQL Editor.
+For a fresh database, apply `supabase/schema.sql` and then `supabase/seed.sql` with a direct Postgres connection. The folder name is retained as migration history.
 
 ## Releasing
 
