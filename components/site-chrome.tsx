@@ -42,7 +42,7 @@ export function SiteFooter({ page }: { page: "app" | "project" }) {
             <a className="button button-ghost" href={repoUrl} target="_blank" rel="noopener noreferrer">GitHub repository <ArrowUpRight /></a>
           </div>
         </>}
-        <div className="footer-meta"><span>© CoTa Warehouse assessment, 2026</span><span>Next.js · Supabase · Vercel</span></div>
+        <div className="footer-meta"><span>© CoTa Warehouse assessment, 2026</span><span>Next.js · Neon · Vercel</span></div>
       </div>
     </footer>
   );

@@ -28,7 +28,7 @@ const deliverables: { label: string; title: string; detail: string; href: string
   { label: "Git repository", title: "Browse source", detail: "github.com/ArielMagalsoDev/cota-warehouse-assessment", href: repo, external: true },
   { label: "README", title: "Setup instructions", detail: "Installation, validation, and demo walkthrough", href: `${repo}/blob/main/README.md`, external: true },
   { label: "Database / schema", title: "Data model", detail: "Three tables, constraints, grants, and RLS policies", href: "#database" },
-  { label: "Architecture", title: "How it fits together", detail: "Browser → Supabase → pure calculation modules", href: "#architecture" },
+  { label: "Architecture", title: "How it fits together", detail: "Browser → Next.js API → Neon → pure calculation modules", href: "#architecture" },
   { label: "Written responses", title: "Parts 4 and 5", detail: "Video-assisted counting and intermittent connectivity", href: "#part-4" },
   { label: "Assumptions", title: "Known limitations", detail: "What the demo does not do, stated plainly", href: "#assumptions" },
   { label: "Read-only API", title: "Inventory JSON", detail: "Public demo data; no credentials in the response", href: "/api/inventory", external: true },
@@ -87,7 +87,7 @@ export default async function ProjectPage() {
               <h2 id="plan-title">Plan <span className="tone">and scope</span></h2>
               <p className="section-intro">Parts 1–3 are implemented and tested. Video recognition and offline stock transactions are design proposals for a later phase.</p>
               <ol className="plan-list">
-                <PlanStep n="01" title="Inventory foundation" done>Model products, case storage, and open shelves in Supabase. Seed the supplied examples and expose demo reads through RLS.</PlanStep>
+                <PlanStep n="01" title="Inventory foundation" done>Model products, case storage, and open shelves in Neon. Seed the supplied examples and expose demo reads through the server API.</PlanStep>
                 <PlanStep n="02" title="Warehouse workflows" done>Mobile-friendly search (Part 1), full-case replenishment with a plain-language explanation (Part 2), and a shortage-checked pick list ordered by aisle, rack, and shelf (Part 3).</PlanStep>
                 <PlanStep n="03" title="Validation and release" done>Test stock arithmetic and pick rules, publish the source, deploy to Vercel, and expose a read-only inventory API and this handoff.</PlanStep>
                 <PlanStep n="04" title="Future evaluation">Pilot video-assisted observations in one aisle, then assess an offline transaction queue only if the workflow expands to recording stock changes.</PlanStep>
@@ -105,13 +105,13 @@ export default async function ProjectPage() {
                   <li>Run <code>pnpm dev</code> and open <code>http://localhost:3000</code>. Validate with <code>pnpm test</code>, <code>pnpm typecheck</code>, and <code>pnpm build</code>.</li>
                 </ol>
               </div>
-              <p className="callout"><span className="status-dot" aria-hidden="true" /><span>The server reads Supabase with a publishable key. No key is included in browser assets or API responses. Local environment files are Git-ignored.</span></p>
+              <p className="callout"><span className="status-dot" aria-hidden="true" /><span>The server reads Neon through a private pooled connection. No database credential is included in browser assets or API responses. Local environment files are Git-ignored.</span></p>
             </section>
 
             <section className="project-section" id="database" aria-labelledby="database-title">
               <SectionLabel>Data model</SectionLabel>
               <h2 id="database-title">Database <span className="tone">and schema</span></h2>
-              <p className="section-intro">Supabase Postgres stores three related tables. Products identify SKUs and case sizes; storage rows locate complete cases; open shelves track unit capacity and current units.</p>
+              <p className="section-intro">Neon Postgres stores three related tables. Products identify SKUs and case sizes; storage rows locate complete cases; open shelves track unit capacity and current units.</p>
               <div className="schema-grid">
                 <div className="card"><code>products</code><p><code>sku</code> primary key, <code>name</code>, and positive <code>units_per_case</code>.</p></div>
                 <div className="card"><code>storage_inventory</code><p>Foreign-key <code>sku</code>, numeric aisle / rack / shelf, nonnegative <code>cases</code>, unique per SKU and location.</p></div>
@@ -123,13 +123,13 @@ export default async function ProjectPage() {
             <section className="project-section" id="architecture" aria-labelledby="architecture-title">
               <SectionLabel>Design</SectionLabel>
               <h2 id="architecture-title">Architecture</h2>
-              <p className="section-intro">Next.js App Router serves the interface on Vercel. A server route reads the three Supabase tables and returns public inventory to the browser without exposing a key. Pure modules in <code>lib/</code> calculate totals, replenishment, and pick allocation. A separate read-only API exposes product totals and locations.</p>
+              <p className="section-intro">Next.js App Router serves the interface on Vercel. A server route reads the three Neon tables and returns public inventory to the browser without exposing a credential. Pure modules in <code>lib/</code> calculate totals, replenishment, and pick allocation. A separate read-only API exposes product totals and locations.</p>
               <div className="architecture-flow" aria-label="Application architecture">
                 <span>Employee browser<small>Next.js UI</small></span>
                 <b aria-hidden="true"><ArrowRight /></b>
-                <span>Next.js API<small>Server-side Supabase reads</small></span>
+                <span>Next.js API<small>Server-side pooled reads</small></span>
                 <b aria-hidden="true"><ArrowRight /></b>
-                <span>Supabase<small>3 read-only tables</small></span>
+                <span>Neon<small>3 read-only tables</small></span>
               </div>
               <p className="section-intro">A draft pick request stays in versioned browser storage. Before generating a route, the app refreshes inventory and blocks the proposal if that refresh fails or stock is insufficient. Recommendations never reserve or change stock.</p>
             </section>

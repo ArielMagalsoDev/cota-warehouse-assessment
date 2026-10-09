@@ -27,7 +27,8 @@ export async function GET() {
       { fetched_at: data.fetchedAt, products },
       { headers: { "Cache-Control": "no-store" } },
     );
-  } catch {
+  } catch (error) {
+    console.error("Failed to load inventory from Neon", error);
     return NextResponse.json(
       { error: "Inventory is temporarily unavailable." },
       { status: 503, headers: { "Cache-Control": "no-store" } },
